@@ -22,7 +22,8 @@ module.exports = function(opt) {
   opt.escapeIllegalCharacters = opt.escapeIllegalCharacters === undefined ? true : opt.escapeIllegalCharacters;
   opt.firstCharacter = opt.firstCharacter || '_';
   opt.prefixFirstNumericCharacter = opt.prefixFirstNumericCharacter === undefined ? true : opt.prefixFirstNumericCharacter;
-
+  opt.prefixNoNumbers = opt.prefixNoNumbers === undefined ? true : opt.prefixNoNumbers;
+    
   return through(processJSON);
 
   /////////////
@@ -75,9 +76,13 @@ module.exports = function(opt) {
 
         // sass variables cannot begin with a number
         if (path === '' && firstCharacterIsNumber.exec(key) && opt.prefixFirstNumericCharacter) {
-          key = opt.firstCharacter + key;
+            if (opt.prefixNoNumbers) {
+                key = opt.firstCharacter;
+            } else {
+                key = opt.firstCharacter + key;
+            }
         }
-
+          
         if (typeof val !== 'object') {
           cb('$' + path + key + ': ' + val + opt.eol);
         } else {
